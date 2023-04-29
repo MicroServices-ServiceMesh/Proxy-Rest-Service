@@ -1,0 +1,1469 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Amwell external FHIR API",
+    "version": "0.9.0"
+  },
+  "servers": [
+    {
+      "url": "https://test-api.amwell.com/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Patient",
+      "description": "Patient FHIR resource type",
+      "externalDocs": {
+        "url": "https://www.hl7.org/fhir/R4/patient.html"
+      }
+    },
+    {
+      "name": "Practitioner",
+      "description": "Practitioner FHIR resource type",
+      "externalDocs": {
+        "url": "https://www.hl7.org/fhir/R4/practitioner.html"
+      }
+    },
+    {
+      "name": "PractitionerRole",
+      "description": "PractitionerRole FHIR resource type",
+      "externalDocs": {
+        "url": "https://www.hl7.org/fhir/R4/practitionerrole.html"
+      }
+    },
+    {
+      "name": "Appointment",
+      "description": "Appointment FHIR resource type",
+      "externalDocs": {
+        "url": "https://www.hl7.org/fhir/R4/appointment.html"
+      }
+    },
+    {
+      "name": "Bundle",
+      "description": "Bundle FHIR resource type",
+      "externalDocs": {
+        "url": "https://www.hl7.org/fhir/R4/bundle.html"
+      }
+    },
+    {
+      "name": "Basic",
+      "description": "Basic FHIR resource type",
+      "externalDocs": {
+        "url": "hhttps://www.hl7.org/fhir/R4/basic.html"
+      }
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "tags": [
+          "Practitioner",
+          "PractitionerRole"
+        ],
+        "summary": "update-instance: Update an existing Practitioner instance",
+        "requestBody": {
+          "description": "The request body is a collection (Bundle) of the Practitioner, PractitionerRole and Basic FHIR resources.",
+          "required": true,
+          "content": {
+            "application/fhir+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/PractitionerFHIRObject"
+                  },
+                  {
+                    "$ref": "#/components/schemas/PractitionerRoleFHIRObject"
+                  },
+                  {
+                    "$ref": "#/components/schemas/BasicFHIRObject"
+                  }
+                ],
+                "example": [
+                  {
+                    "$ref": "#/components/schemas/BundleFHIRObject"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Practitioner already exists",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Practitioner has been created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "When an invalid request is provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcomeError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "When the user doesn't have proper permissions to load the Practitioner",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcomeError"
+                }
+              }
+            }
+          },
+          "5XX": {
+            "description": "When an unexpected error occurs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcomeError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Patient": {
+      "get": {
+        "tags": [
+          "Patient"
+        ],
+        "summary": "search-type: Search for Patient instances",
+        "description": "This is a search type",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/fhir+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BundleFHIRObject"
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Patient/{id}": {
+      "get": {
+        "tags": [
+          "Patient"
+        ],
+        "summary": "read-instance: Read Patient instance",
+        "operationId": "get-patient-by-id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The resource ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "minimum": 1,
+              "type": "string",
+              "example": null
+            },
+            "example": "123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/fhir+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientFHIRObject"
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Patient"
+        ],
+        "summary": "instance-patch: Patch a resource instance of type Patient by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The resource ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "minimum": 1,
+              "type": "string",
+              "example": null
+            },
+            "example": "123"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/JsonPatchObject"
+              },
+              "example": "[\n    { \"op\": \"add\", \"path\": \"/identifier\", \"value\": \n      {\n        \"use\": \"usual\",\n        \"type\": {\n          \"text\": \"INTERNAL\"\n        },\n        \"value\": \" 5337\"\n      }                  \n  }\n]"
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/fhir+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcomeSuccess"
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Practitioner/{id}": {
+      "get": {
+        "tags": [
+          "Practitioner"
+        ],
+        "operationId": "get-practitioner-by-id",
+        "summary": "read-instance: Read Practitioner instance",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The resource ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "minimum": 1,
+              "type": "string",
+              "example": null
+            },
+            "example": "123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/fhir+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PractitionerFHIRObject"
+                },
+                "example": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Appointment": {
+      "post": {
+        "tags": [
+          "Appointment"
+        ],
+        "summary": "Book a new appointment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentFHIRObject"
+              },
+              "example": {
+                "resourceType": "Appointment",
+                "identifier": [
+                  {
+                    "system": "https://converge.amwell.systems/externalEHRId",
+                    "value": "12345"
+                  }
+                ],
+                "status": "booked",
+                "start": "2023-05-09T10:45:00.000+00:00",
+                "end": "2023-05-09T11:00:00.000+00:00",
+                "extension": [
+                  {
+                    "url": "https://converge.amwell.systems/visitType",
+                    "valueCode": "Initial"
+                  }
+                ],
+                "participant": [
+                  {
+                    "type": [
+                      {
+                        "coding": [
+                          {
+                            "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                            "code": "PPRF"
+                          }
+                        ]
+                      }
+                    ],
+                    "actor": {
+                      "type": "Practitioner",
+                      "identifier": {
+                        "system": "https://converge.amwell.systems/NPI",
+                        "value": "12345"
+                      }
+                    },
+                    "status": "accepted"
+                  },
+                  {
+                    "actor": {
+                      "type": "Patient",
+                      "identifier": {
+                        "system": "https://converge.amwell.systems/MRN",
+                        "value": "12345"
+                      }
+                    },
+                    "status": "accepted"
+                  },
+                  {
+                    "actor": {
+                      "reference": "HealthcareService/ae709cfb-fec1-4ce8-b584-ebc1fb4d888d"
+                    },
+                    "status": "accepted"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Appointment created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcomeSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request, missing required properties, incorrect values for properties",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcomeError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Appointment conflicts with existing patient appointment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcomeError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal system errors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationOutcomeError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PatientFHIRObject": {
+        "type": "object",
+        "required": [
+          "resourceType"
+        ],
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "example": "Patient"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdentifierFHIRObject"
+            }
+          },
+          "active": {
+            "type": "boolean",
+            "example": true
+          },
+          "name": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanNameFHIRObject"
+            }
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TelecomFHIRObject"
+            }
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other",
+              "unknown"
+            ]
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "address": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressFHIRObject"
+            }
+          },
+          "maritalStatus": {
+            "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+          },
+          "contact": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactFHIRObject"
+            }
+          },
+          "communication": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CommunicationFHIRObject"
+            }
+          }
+        },
+        "description": "FHIR Patient",
+        "example": {
+          "resourceType": "Patient",
+          "id": "whdu9d9rj0"
+        }
+      },
+      "PractitionerFHIRObject": {
+        "type": "object",
+        "description": "FHIR Practitioner",
+        "required": [
+          "resourceType"
+        ],
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "example": "Practitioner"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdentifierFHIRObject"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HumanNameFHIRObject"
+            }
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TelecomFHIRObject"
+            }
+          },
+          "address": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AddressFHIRObject"
+            }
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other",
+              "unknown"
+            ]
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "qualification": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QualificationFHIRObject"
+            }
+          },
+          "communication": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+            }
+          }
+        },
+        "example": {
+          "resourceType": "Practitioner",
+          "id": "emdEDKDdjhdjh04i4nhjd9",
+          "identifier": [
+            {
+              "use": "usual",
+              "system": "urn:oid:1.2.840.114350.1.13.861.1.7.5.737384.295",
+              "value": "101010101"
+            },
+            {
+              "use": "usual",
+              "type": {
+                "text": "INTERNAL"
+              },
+              "value": "4787487"
+            }
+          ],
+          "active": true,
+          "name": [
+            {
+              "use": "usual",
+              "text": "Beauregard Seeker",
+              "family": "Seeker",
+              "given": [
+                "Beauregard"
+              ]
+            }
+          ],
+          "gender": "male"
+        }
+      },
+      "PractitionerRoleFHIRObject": {
+        "type": "object",
+        "description": "FHIR PractitionerRole",
+        "required": [
+          "resourceType"
+        ],
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "example": "PractitionerRole"
+          },
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdentifierFHIRObject"
+            }
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "period": {
+            "$ref": "#/components/schemas/PeriodFhirObject"
+          },
+          "practitioner": {
+            "$ref": "#/components/schemas/ReferenceFHIRObject"
+          },
+          "organization": {
+            "$ref": "#/components/schemas/ReferenceFHIRObject"
+          },
+          "code": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+            }
+          },
+          "specialty": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+            }
+          },
+          "location": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReferenceFHIRObject"
+            }
+          },
+          "healthcareService": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReferenceFHIRObject"
+            }
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TelecomFHIRObject"
+            }
+          },
+          "endpoint": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReferenceFHIRObject"
+            }
+          }
+        },
+        "example": {
+          "resourceType": "PractitionerRole",
+          "id": "dkjdkjd90.u3.DjMFsl.djhud98hdFFG",
+          "active": true,
+          "practitioner": {
+            "reference": "Practitioner/emdEDKDdjhdjh04i4nhjd9",
+            "display": "Beauregard Seeker"
+          },
+          "code": [
+            {
+              "coding": [
+                {
+                  "system": "urn:oid:1.2.840.114350.1.13.861.1.7.10.836982.1040",
+                  "code": "1",
+                  "display": "Physician"
+                }
+              ],
+              "text": "Physician"
+            }
+          ],
+          "specialty": [
+            {
+              "coding": [
+                {
+                  "system": "urn:oid:1.2.840.114350.1.72.1.7.7.10.688867.4160",
+                  "code": "19",
+                  "display": "Family Practice"
+                }
+              ],
+              "text": "Family Practice"
+            },
+            {
+              "coding": [
+                {
+                  "system": "urn:oid:1.2.840.114350.1.72.1.7.7.10.688867.4160",
+                  "code": "32",
+                  "display": "Internal Medicine"
+                }
+              ],
+              "text": "Internal Medicine"
+            }
+          ]
+        }
+      },
+      "AppointmentFHIRObject": {
+        "type": "object",
+        "description": "FHIR Appointment",
+        "required": [
+          "resourceType",
+          "status",
+          "start",
+          "end",
+          "extension",
+          "participant"
+        ],
+        "properties": {
+          "resourceType": {
+            "type": "string",
+            "example": "Appointment"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "proposed",
+              "pending",
+              "booked",
+              "arrived",
+              "fulfilled",
+              "cancelled",
+              "noshow",
+              "entered-in-error",
+              "checked-in",
+              "waitlist"
+            ],
+            "example": "booked"
+          },
+          "serviceCategory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+            }
+          },
+          "serviceType": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+            }
+          },
+          "specialty": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+            }
+          },
+          "appointmentType": {
+            "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+          },
+          "reasonCode": {
+            "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+          },
+          "reasonReference": {
+            "$ref": "#/components/schemas/ReferenceFHIRObject"
+          },
+          "priority": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string"
+          },
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-05-09T10:45:00.000+00:00"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-05-09T09:00:00.000+00:00"
+          },
+          "slot": {
+            "$ref": "#/components/schemas/ReferenceFHIRObject"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "patientInstruction": {
+            "type": "string"
+          },
+          "extension": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ExtensionFHIRObject"
+            }
+          },
+          "participant": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParticipantFHIRObject"
+            }
+          }
+        },
+        "example": {
+          "resourceType": "Appointment",
+          "identifier": [
+            {
+              "system": "https://converge.amwell.systems/externalEHRId",
+              "value": "12345"
+            }
+          ],
+          "status": "booked",
+          "start": "2023-05-09T10:45:00.000+00:00",
+          "end": "2023-05-09T11:00:00.000+00:00",
+          "extension": [
+            {
+              "url": "https://converge.amwell.systems/visitType",
+              "valueCode": "Initial"
+            }
+          ],
+          "participant": [
+            {
+              "type": [
+                {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                      "code": "PPRF"
+                    }
+                  ]
+                }
+              ],
+              "actor": {
+                "identifier": {
+                  "system": "https://converge.amwell.systems/NPI",
+                  "value": "12345"
+                }
+              },
+              "status": "accepted"
+            },
+            {
+              "actor": {
+                "identifier": {
+                  "system": "https://converge.amwell.systems/MRN",
+                  "value": "12345"
+                }
+              },
+              "status": "accepted"
+            },
+            {
+              "actor": {
+                "reference": "HealthcareService/ae709cfb-fec1-4ce8-b584-ebc1fb4d888d"
+              },
+              "status": "accepted"
+            }
+          ]
+        }
+      },
+      "IdentifierFHIRObject": {
+        "type": "object",
+        "required": [
+          "system",
+          "value"
+        ],
+        "properties": {
+          "use": {
+            "type": "string",
+            "enum": [
+              "usual",
+              "official",
+              "temp",
+              "secondary",
+              "old"
+            ]
+          },
+          "type": {
+            "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+          },
+          "system": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string",
+            "example": "XYZ123"
+          },
+          "period": {
+            "$ref": "#/components/schemas/PeriodFhirObject"
+          },
+          "assigner": {
+            "$ref": "#/components/schemas/ReferenceFHIRObject"
+          }
+        }
+      },
+      "ExtensionFHIRObject": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "valueCode": {
+            "type": "string"
+          }
+        }
+      },
+      "ParticipantFHIRObject": {
+        "type": "object",
+        "required": [
+          "actor",
+          "status"
+        ],
+        "properties": {
+          "actor": {
+            "$ref": "#/components/schemas/ReferenceFHIRObject"
+          },
+          "type": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "accepted"
+          }
+        }
+      },
+      "CodeableConceptFHIRObject": {
+        "type": "object",
+        "properties": {
+          "coding": {
+            "$ref": "#/components/schemas/CodingFHIRObject"
+          }
+        }
+      },
+      "CodingFHIRObject": {
+        "type": "object",
+        "properties": {
+          "system": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "ReferenceFHIRObject": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "type": "string",
+            "example": "HealthcareService/ae709cfb-fec1-4ce8-b584-ebc1fb4d888d"
+          },
+          "type": {
+            "type": "string"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierFHIRObject"
+          },
+          "display": {
+            "type": "string"
+          }
+        }
+      },
+      "OperationOutcomeSuccess": {
+        "type": "object",
+        "description": "FHIR OperationOutcome",
+        "example": {
+          "resourceType": "OperationOutcome",
+          "issue": [
+            {
+              "severity": "information",
+              "code": "informational",
+              "details": {
+                "text": "All OK"
+              }
+            }
+          ]
+        }
+      },
+      "OperationOutcomeError": {
+        "type": "object",
+        "description": "FHIR OperationOutcome",
+        "example": {
+          "resourceType": "OperationOutcome",
+          "id": "101",
+          "issue": [
+            {
+              "severity": "error",
+              "code": "structure",
+              "details": {
+                "text": "Practitioner resource is missing name"
+              },
+              "location": [
+                "/f:Practitioner/f:name"
+              ],
+              "expression": [
+                "Patient.name"
+              ]
+            }
+          ]
+        }
+      },
+      "PractitionerResponse": {
+        "type": "object",
+        "description": "Successful response from practitioner load request",
+        "example": {
+          "displayName": "Amwell TestProvider2",
+          "practitionerId": "dfdb8e1d-18cf-4172-9a9d-ab42a4e6b54b",
+          "practitionerRoleId": "7a8a9816-702f-472e-af92-e138408eb63f"
+        }
+      },
+      "BundleFHIRObject": {
+        "type": "object",
+        "description": "FHIR OperationOutcome",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierFHIRObject"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "document",
+              "message",
+              "transaction",
+              "transaction-response",
+              "batch",
+              "batch-response",
+              "history",
+              "searchset",
+              "collection"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "link": {
+            "$ref": "#/components/schemas/LinkFHIRObject"
+          },
+          "entry": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PatientFHIRObject"
+                },
+                {
+                  "$ref": "#/components/schemas/PractitionerFHIRObject"
+                },
+                {
+                  "$ref": "#/components/schemas/PractitionerRoleFHIRObject"
+                },
+                {
+                  "$ref": "#/components/schemas/BasicFHIRObject"
+                }
+              ]
+            }
+          }
+        },
+        "example": {
+          "resourceType": "Bundle",
+          "type": "searchset",
+          "total": 3,
+          "entry": [
+            {
+              "resourceType": "Practitioner",
+              "id": "emdEDKDdjhdjh04i4nhjd9",
+              "identifier": [
+                {
+                  "use": "usual",
+                  "system": "urn:oid:1.2.840.114350.1.13.861.1.7.5.737384.295",
+                  "value": "101010101"
+                },
+                {
+                  "use": "usual",
+                  "type": {
+                    "text": "INTERNAL"
+                  },
+                  "value": "4787487"
+                }
+              ],
+              "active": true,
+              "name": [
+                {
+                  "use": "usual",
+                  "text": "Beauregard Seeker",
+                  "family": "Seeker",
+                  "given": [
+                    "Beauregard"
+                  ]
+                }
+              ],
+              "gender": "male"
+            },
+            {
+              "resourceType": "PractitionerRole",
+              "id": "dkjdkjd90.u3.DjMFsl.djhud98hdFFG",
+              "active": true,
+              "practitioner": {
+                "reference": "Practitioner/emdEDKDdjhdjh04i4nhjd9",
+                "display": "Beauregard Seeker"
+              },
+              "code": [
+                {
+                  "coding": [
+                    {
+                      "system": "urn:oid:1.2.840.114350.1.13.861.1.7.10.836982.1040",
+                      "code": "1",
+                      "display": "Physician"
+                    }
+                  ],
+                  "text": "Physician"
+                }
+              ],
+              "specialty": [
+                {
+                  "coding": [
+                    {
+                      "system": "urn:oid:1.2.840.114350.1.72.1.7.7.10.688867.4160",
+                      "code": "19",
+                      "display": "Family Practice"
+                    }
+                  ],
+                  "text": "Family Practice"
+                },
+                {
+                  "coding": [
+                    {
+                      "system": "urn:oid:1.2.840.114350.1.72.1.7.7.10.688867.4160",
+                      "code": "32",
+                      "display": "Internal Medicine"
+                    }
+                  ],
+                  "text": "Internal Medicine"
+                }
+              ]
+            },
+            {
+              "resourceType": "Basic",
+              "id": "classModel",
+              "code": "",
+              "identifier": [],
+              "subject": {
+                "type": "Practitioner/dkjdkj03n49"
+              }
+            }
+          ]
+        }
+      },
+      "LinkFHIRObject": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "required": [
+          "relation",
+          "url"
+        ],
+        "properties": {
+          "relation": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "example": [
+          {
+            "relation": "self",
+            "url": "https://api.amwell.com/api/v1/fhir/Patient/eJzlzKe3KPzAV5TtkxmNivQ3"
+          }
+        ]
+      },
+      "JsonPatchObject": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "JSON Patch",
+        "example": [
+          {
+            "op": "add",
+            "path": "/identifier",
+            "value": {
+              "use": "usual",
+              "type": {
+                "text": "INTERNAL"
+              },
+              "value": " 5337"
+            }
+          }
+        ],
+        "required": [
+          "op",
+          "path",
+          "value"
+        ],
+        "properties": {
+          "op": {
+            "description": "Patch operation type (add or replace)",
+            "type": "string",
+            "enum": [
+              "add",
+              "replace"
+            ]
+          },
+          "path": {
+            "description": "Property path (currently '/identifier')",
+            "type": "string"
+          },
+          "value": {
+            "description": "Replacement object",
+            "$ref": "#/components/schemas/IdentifierFHIRObject"
+          }
+        }
+      },
+      "BasicFHIRObject": {
+        "type": "object",
+        "description": "Basic FHIR Object",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdentifierFHIRObject"
+            }
+          },
+          "code": {
+            "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/ReferenceFHIRObject"
+          },
+          "created": {
+            "type": "string",
+            "format": "date"
+          },
+          "author": {
+            "$ref": "#/components/schemas/ReferenceFHIRObject"
+          }
+        },
+        "example": {
+          "resourceType": "Basic",
+          "id": "classModel",
+          "code": "",
+          "identifier": [
+            {
+              "system": "https://converge.amwell.com/tenantId",
+              "value": "PARTNER"
+            },
+            {
+              "system": "https://converge.amwell.com/ehrId",
+              "value": "PARTNER-EHR"
+            }
+          ],
+          "subject": {
+            "type": "Practitioner/dkjdkj03n49"
+          }
+        }
+      },
+      "PeriodFhirObject": {
+        "description": "period",
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string"
+          }
+        }
+      },
+      "HumanNameFHIRObject": {
+        "type": "object",
+        "description": "Name object",
+        "properties": {
+          "use": {
+            "type": "string",
+            "enum": [
+              "usual",
+              "official",
+              "temp",
+              "nickname",
+              "old",
+              "maiden"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "example": "Bob Seeker"
+          },
+          "family": {
+            "type": "string",
+            "example": "Seeker"
+          },
+          "given": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "prefix": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "suffix": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "period": {
+            "$ref": "#/components/schemas/PeriodFhirObject"
+          }
+        }
+      },
+      "TelecomFHIRObject": {
+        "type": "object",
+        "description": "ContactPoint",
+        "properties": {
+          "system": {
+            "type": "string",
+            "enum": [
+              "phone",
+              "fax",
+              "email",
+              "pager",
+              "url",
+              "sms",
+              "other"
+            ]
+          },
+          "value": {
+            "type": "string"
+          },
+          "use": {
+            "type": "string",
+            "enum": [
+              "home",
+              "work",
+              "temp",
+              "old",
+              "mobile"
+            ]
+          },
+          "rank": {
+            "type": "integer"
+          },
+          "period": {
+            "$ref": "#/components/schemas/PeriodFhirObject"
+          }
+        }
+      },
+      "AddressFHIRObject": {
+        "type": "object",
+        "description": "Address",
+        "properties": {
+          "use": {
+            "type": "string",
+            "enum": [
+              "home",
+              "work",
+              "temp",
+              "old",
+              "billing"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "postal",
+              "physical",
+              "both"
+            ]
+          },
+          "text": {
+            "type": "string"
+          },
+          "line": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "city": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "postalCode": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "period": {
+            "$ref": "#/components/schemas/PeriodFhirObject"
+          }
+        }
+      },
+      "ContactFHIRObject": {
+        "type": "object",
+        "properties": {
+          "relationship": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+            }
+          },
+          "name": {
+            "$ref": "#/components/schemas/HumanNameFHIRObject"
+          },
+          "telecom": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactFHIRObject"
+            }
+          },
+          "address": {
+            "$ref": "#/components/schemas/AddressFHIRObject"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "male",
+              "female",
+              "other",
+              "unknown"
+            ]
+          },
+          "period": {
+            "$ref": "#/components/schemas/PeriodFhirObject"
+          }
+        }
+      },
+      "CommunicationFHIRObject": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+          },
+          "preferred": {
+            "type": "boolean"
+          }
+        }
+      },
+      "QualificationFHIRObject": {
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "properties": {
+          "identifier": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/IdentifierFHIRObject"
+            }
+          },
+          "code": {
+            "$ref": "#/components/schemas/CodeableConceptFHIRObject"
+          },
+          "period": {
+            "$ref": "#/components/schemas/PeriodFhirObject"
+          },
+          "issuer": {
+            "$ref": "#/components/schemas/ReferenceFHIRObject"
+          }
+        }
+      }
+    }
+  }
+}
