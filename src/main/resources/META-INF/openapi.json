@@ -193,7 +193,7 @@
           "200": {
             "description": "Success",
             "content": {
-              "application/fhir+json": {
+              "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PatientFHIRObject"
                 },

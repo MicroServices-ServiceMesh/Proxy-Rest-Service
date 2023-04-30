@@ -27,7 +27,7 @@ public class PatientRoute extends RouteBuilder {
         .removeHeader(Exchange.HTTP_PATH)
         .setHeader(Exchange.HTTP_PATH, simple("${exchangeProperty.patientId}"))
         .circuitBreaker()
-        .resilience4jConfiguration().timeoutEnabled(true).timeoutDuration(100).end()
+        .resilience4jConfiguration().timeoutEnabled(true).timeoutDuration(1000).end()
         .to("https://{{fhir.host}}/baseR4/Patient/?_format=json&bridgeEndpoint=true")
         .onFallback().setHeader(Exchange.HTTP_RESPONSE_CODE, constant(503)).end()
         .choice()
